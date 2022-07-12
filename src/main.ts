@@ -1,3 +1,5 @@
+import 'dotenv/config';
+
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
 import { readFile } from 'fs/promises';
@@ -8,6 +10,7 @@ import path from 'path';
 import { AppModule } from './app.module.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +22,6 @@ async function bootstrap() {
   const document = yaml.parse(DOC_API);
   SwaggerModule.setup('doc', app, document);
 
-  await app.listen(4000);
+  await app.listen(Number(PORT));
 }
 bootstrap();
