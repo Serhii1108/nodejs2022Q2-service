@@ -1,4 +1,4 @@
-import { User } from '../modules/users/interfaces/user.entity.js';
+import { User } from '../modules/users/entity/user.entity.js';
 
 interface StorageInterface {
   users: User[];
@@ -15,6 +15,10 @@ class Database {
 
   async getAll(): Promise<User[]> {
     return this.users;
+  }
+
+  async findById(id: uuid): Promise<User | undefined> {
+    return this.users.find((user) => user.id === id);
   }
 }
 

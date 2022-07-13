@@ -29,6 +29,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "eqeqeq": "error",
     "prettier/prettier": "error",
-    "no-unused-vars": "off"
+    "no-unused-vars": "off",
+    "no-undef": "off"
   }
 }
