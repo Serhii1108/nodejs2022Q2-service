@@ -37,6 +37,17 @@ class Database {
     user.password = updatePasswordDto.newPassword;
     return user;
   }
+
+  async deleteUser(id: uuid): Promise<User | undefined> {
+    const userToDelete: User | undefined = this.users.find(
+      (user) => user.id === id,
+    );
+
+    if (!userToDelete) return userToDelete;
+
+    this.storage.users = this.users.filter((user) => user.id !== id);
+    return userToDelete;
+  }
 }
 
 export default new Database();

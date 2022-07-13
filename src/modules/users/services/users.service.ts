@@ -42,4 +42,9 @@ export class UsersService {
 
     return await Database.updatePassword(id, updatePasswordDto);
   }
+
+  async deleteUser(id: uuid) {
+    const deletedUser: User | undefined = await Database.deleteUser(id);
+    if (!deletedUser) throw new NotFoundException('User not found');
+  }
 }
