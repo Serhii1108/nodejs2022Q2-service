@@ -1,3 +1,4 @@
+import { CreateUserDto } from 'src/modules/users/dto/createUser.dto.js';
 import { User } from '../modules/users/entity/user.entity.js';
 
 interface StorageInterface {
@@ -19,6 +20,12 @@ class Database {
 
   async findById(id: uuid): Promise<User | undefined> {
     return this.users.find((user) => user.id === id);
+  }
+
+  async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const newUser = new User({ ...createUserDto });
+    this.users.push(newUser);
+    return newUser;
   }
 }
 

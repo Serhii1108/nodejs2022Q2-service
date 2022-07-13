@@ -1,4 +1,5 @@
 import { Exclude } from 'class-transformer';
+import { v4 } from 'uuid';
 
 export class User {
   id: string;
@@ -13,5 +14,10 @@ export class User {
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
+
+    this.id = v4();
+    this.version = 1;
+    this.createdAt = Date.now();
+    this.updatedAt = this.createdAt;
   }
 }
