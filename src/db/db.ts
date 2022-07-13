@@ -35,6 +35,8 @@ class Database {
   ): Promise<User> {
     const user: User = this.users.find((user) => user.id === id);
     user.password = updatePasswordDto.newPassword;
+    user.version++;
+    user.updatedAt = Date.now();
     return user;
   }
 
