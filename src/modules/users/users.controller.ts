@@ -13,7 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { User } from './entity/user.entity.js';
+import { User } from './entities/user.entity.js';
 import { UsersService } from './services/users.service.js';
 import { CreateUserDto } from './dto/createUser.dto.js';
 import { UpdatePasswordDto } from './dto/updatePassword.dto.js';

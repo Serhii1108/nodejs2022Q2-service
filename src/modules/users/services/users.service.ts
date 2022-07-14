@@ -7,7 +7,7 @@ import {
 import Database from '../../../db/db.js';
 import { CreateUserDto } from '../dto/createUser.dto.js';
 import { UpdatePasswordDto } from '../dto/updatePassword.dto.js';
-import { User } from '../entity/user.entity.js';
+import { User } from '../entities/user.entity.js';
 
 @Injectable()
 export class UsersService {
