@@ -13,27 +13,37 @@ export class AlbumsService {
   }
 
   async findById(id: uuid) {
-    const album: Album | undefined = await Database.findAlbumById(id);
-    if (!album) {
-      throw new NotFoundException('Album not found');
-    }
+    const album: Album | undefined = (await Database.findById(
+      id,
+      'albums',
+    )) as Album;
+
+    if (!album) throw new NotFoundException('Album not found');
+
     return album;
   }
 
   async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
-    return Database.createAlbum(createAlbumDto);
+    return (await Database.createItem(
+      createAlbumDto,
+      'albums',
+      Album,
+    )) as Album;
   }
 
   async updateAlbum(id: uuid, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
-    const album: Album | undefined = await Database.findAlbumById(id);
-    if (!album) {
-      throw new NotFoundException('Album not found');
-    }
+    const album: Album | undefined = (await Database.findById(
+      id,
+      'albums',
+    )) as Album;
+
+    if (!album) throw new NotFoundException('Album not found');
+
     return Database.updateAlbum(id, updateAlbumDto);
   }
 
   async deleteAlbum(id: uuid) {
-    const deletedAlbum: Album | undefined = await Database.deleteAlbum(id);
-    if (!deletedAlbum) throw new NotFoundException('Album not found');
+    const IsAlbumDeleted: boolean = await Database.deleteItem(id, 'albums');
+    if (!IsAlbumDeleted) throw new NotFoundException('Album not found');
   }
 }

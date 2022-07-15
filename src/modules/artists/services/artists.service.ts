@@ -12,28 +12,37 @@ export class ArtistsService {
   }
 
   async findById(id: uuid): Promise<Artist> {
-    const artist: Artist | undefined = await Database.findArtistById(id);
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
-    }
+    const artist: Artist | undefined = (await Database.findById(
+      id,
+      'artists',
+    )) as Artist;
+
+    if (!artist) throw new NotFoundException('Artist not found');
+
     return artist;
   }
 
   async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
-    return await Database.createArtist(createArtistDto);
+    return (await Database.createItem(
+      createArtistDto,
+      'artists',
+      Artist,
+    )) as Artist;
   }
 
   async updateArtist(id: uuid, updateArtistDto: UpdateArtistDto) {
-    const artist: Artist | undefined = await Database.findArtistById(id);
+    const artist: Artist | undefined = (await Database.findById(
+      id,
+      'artists',
+    )) as Artist;
 
-    if (!artist) {
-      throw new NotFoundException('Artist not found');
-    }
+    if (!artist) throw new NotFoundException('Artist not found');
+
     return await Database.updateArtist(id, updateArtistDto);
   }
 
   async deleteArtist(id: uuid) {
-    const deletedArtist: Artist | undefined = await Database.deleteArtist(id);
-    if (!deletedArtist) throw new NotFoundException('Artist not found');
+    const isArtistDeleted: boolean = await Database.deleteItem(id, 'artists');
+    if (!isArtistDeleted) throw new NotFoundException('Artist not found');
   }
 }

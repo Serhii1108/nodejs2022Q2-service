@@ -16,35 +16,38 @@ export class UsersService {
   }
 
   async findById(id: uuid): Promise<User> {
-    const user: User | undefined = await Database.findUserById(id);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user: User | undefined = (await Database.findById(
+      id,
+      'users',
+    )) as User;
+
+    if (!user) throw new NotFoundException('User not found');
+
     return user;
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    return await Database.createUser(createUserDto);
+    return (await Database.createItem(createUserDto, 'users', User)) as User;
   }
 
   async updatePassword(
     id: uuid,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<User> {
-    const user: User | undefined = await Database.findUserById(id);
+    const user: User | undefined = (await Database.findById(
+      id,
+      'users',
+    )) as User;
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (user.password !== updatePasswordDto.oldPassword) {
+    if (!user) throw new NotFoundException('User not found');
+    if (user.password !== updatePasswordDto.oldPassword)
       throw new ForbiddenException('Password is wrong');
-    }
 
     return await Database.updatePassword(id, updatePasswordDto);
   }
 
   async deleteUser(id: uuid) {
-    const deletedUser: User | undefined = await Database.deleteUser(id);
-    if (!deletedUser) throw new NotFoundException('User not found');
+    const isUserDeleted: boolean = await Database.deleteItem(id, 'users');
+    if (!isUserDeleted) throw new NotFoundException('User not found');
   }
 }

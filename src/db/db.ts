@@ -15,138 +15,108 @@ interface StorageInterface {
   albums: Album[];
 }
 
-type StorageItems = 'users' | 'artists' | 'albums';
+type StorageItemsNames = 'users' | 'artists' | 'albums';
+type StorageItems = User | Artist | Album;
+type StorageItemsArr = User[] | Artist[] | Album[];
+type CreateDtos = CreateUserDto | CreateArtistDto | CreateAlbumDto;
 
 class Database {
-  private storage: StorageInterface = {
+  private readonly storage: StorageInterface = {
     users: [],
     artists: [],
     albums: [],
   };
 
-  get users() {
-    return this.storage.users;
+  async getAll(storageItemName: StorageItemsNames): Promise<StorageItemsArr> {
+    return this.storage[storageItemName];
   }
 
-  get artists() {
-    return this.storage.artists;
+  async findById(
+    id: uuid,
+    storageItemName: StorageItemsNames,
+  ): Promise<StorageItems | undefined> {
+    let searchedItem: User | Artist | Album | undefined = undefined;
+    const items: StorageItemsArr = this.storage[storageItemName];
+    items.forEach((item: User | Artist | Album) => {
+      if (item.id === id) searchedItem = item;
+    });
+    return searchedItem;
   }
 
-  get albums() {
-    return this.storage.albums;
+  async createItem(
+    createItemDto: CreateDtos,
+    storageItemName: StorageItemsNames,
+    itemToCreate: any,
+  ): Promise<StorageItems> {
+    const newItem = new itemToCreate({ ...createItemDto });
+    this.storage[storageItemName].push(newItem);
+    return newItem;
   }
 
-  async getAll(itemType: StorageItems): Promise<User[] | Artist[] | Album[]> {
-    return this.storage[itemType];
+  async deleteItem(
+    id: uuid,
+    storageItemName: StorageItemsNames,
+  ): Promise<true | false> {
+    const items: StorageItemsArr = this.storage[storageItemName];
+
+    let isItemDeleted = false;
+    const filteredItems = [];
+
+    items.forEach((item: StorageItems) => {
+      if (item.id === id) {
+        isItemDeleted = true;
+      } else {
+        filteredItems.push(item);
+      }
+    });
+
+    if (!isItemDeleted) return false;
+
+    this.storage[storageItemName] = filteredItems;
+    return true;
   }
 
-  //
   // Users
-  //
-
-  async findUserById(id: uuid): Promise<User | undefined> {
-    return this.users.find((user) => user.id === id);
-  }
-
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = new User({ ...createUserDto });
-    this.users.push(newUser);
-    return newUser;
-  }
-
   async updatePassword(
     id: uuid,
-    updatePasswordDto: UpdatePasswordDto,
+    { newPassword }: UpdatePasswordDto,
   ): Promise<User> {
-    const user: User = this.users.find((user) => user.id === id);
-    user.password = updatePasswordDto.newPassword;
+    const user: User = this.storage.users.find((user) => user.id === id);
+
+    user.password = newPassword;
     user.version++;
     user.updatedAt = Date.now();
+
     return user;
   }
 
-  async deleteUser(id: uuid): Promise<User | undefined> {
-    const userToDelete: User | undefined = this.users.find(
-      (user) => user.id === id,
-    );
-
-    if (!userToDelete) return userToDelete;
-
-    this.storage.users = this.users.filter((user) => user.id !== id);
-    return userToDelete;
-  }
-
-  //
   // Artists
-  //
-
-  async findArtistById(id: uuid): Promise<Artist | undefined> {
-    return this.artists.find((artist) => artist.id === id);
-  }
-
-  async createArtist(createArtistDto: CreateArtistDto): Promise<Artist> {
-    const newArtist = new Artist({ ...createArtistDto });
-    this.artists.push(newArtist);
-    return newArtist;
-  }
-
   async updateArtist(
     id: uuid,
-    updateArtistDto: UpdateArtistDto,
+    { name, grammy }: UpdateArtistDto,
   ): Promise<Artist> {
-    const artist: Artist = this.artists.find((artist) => artist.id === id);
-
-    artist.name = updateArtistDto.name;
-    artist.grammy = updateArtistDto.grammy;
-    return artist;
-  }
-
-  async deleteArtist(id: uuid): Promise<Artist | undefined> {
-    const artistToDelete: Artist | undefined = this.artists.find(
+    const artist: Artist = this.storage.artists.find(
       (artist) => artist.id === id,
     );
 
-    if (!artistToDelete) return artistToDelete;
+    artist.name = name;
+    artist.grammy = grammy;
 
-    this.storage.artists = this.artists.filter((artist) => artist.id !== id);
-    return artistToDelete;
+    return artist;
   }
 
-  //
   // Albums
-  //
-  async findAlbumById(id: uuid): Promise<Album | undefined> {
-    return this.albums.find((album) => album.id === id);
-  }
-
-  async createAlbum(createAlbumDto: CreateAlbumDto): Promise<Album> {
-    const newAlbum = new Album({ ...createAlbumDto });
-    this.albums.push(newAlbum);
-    return newAlbum;
-  }
-
   async updateAlbum(
     id: uuid,
     { name, year, artistId }: UpdateAlbumDto,
   ): Promise<Album> {
-    const album: Album = this.albums.find((album) => album.id === id);
+    const album: Album = this.storage.albums.find((album) => album.id === id);
 
     album.name = name;
     album.year = year;
     album.artistId = artistId;
 
     return album;
-  }
-
-  async deleteAlbum(id: uuid): Promise<Album | undefined> {
-    const albumToDelete: Album | undefined = this.albums.find(
-      (album) => album.id === id,
-    );
-
-    if (!albumToDelete) return albumToDelete;
-
-    this.storage.albums = this.albums.filter((album) => album.id !== id);
-    return albumToDelete;
   }
 }
 
