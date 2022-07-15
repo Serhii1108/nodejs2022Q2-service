@@ -10,6 +10,8 @@ interface StorageInterface {
   artists: Artist[];
 }
 
+type StorageItems = 'users' | 'artists';
+
 class Database {
   private storage: StorageInterface = {
     users: [],
@@ -24,14 +26,15 @@ class Database {
     return this.storage.artists;
   }
 
+  async getAll(itemType: StorageItems): Promise<User[] | Artist[]> {
+    return this.storage[itemType];
+  }
+
   //
   // Users
   //
-  async getAll(): Promise<User[]> {
-    return this.users;
-  }
 
-  async findById(id: uuid): Promise<User | undefined> {
+  async findUserById(id: uuid): Promise<User | undefined> {
     return this.users.find((user) => user.id === id);
   }
 
@@ -66,9 +69,6 @@ class Database {
   //
   // Artists
   //
-  async getAllArtists(): Promise<Artist[]> {
-    return this.artists;
-  }
 
   async findArtistById(id: uuid): Promise<Artist | undefined> {
     return this.artists.find((artist) => artist.id === id);

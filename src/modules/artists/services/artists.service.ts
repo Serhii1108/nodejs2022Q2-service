@@ -8,7 +8,7 @@ import { Artist } from '../entities/artist.entity.js';
 @Injectable()
 export class ArtistsService {
   async getAll(): Promise<Artist[]> {
-    return await Database.getAllArtists();
+    return (await Database.getAll('artists')) as Artist[];
   }
 
   async findById(id: uuid): Promise<Artist> {

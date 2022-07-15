@@ -12,11 +12,11 @@ import { User } from '../entities/user.entity.js';
 @Injectable()
 export class UsersService {
   async getAll(): Promise<User[]> {
-    return await Database.getAll();
+    return (await Database.getAll('users')) as User[];
   }
 
   async findById(id: uuid): Promise<User> {
-    const user: User | undefined = await Database.findById(id);
+    const user: User | undefined = await Database.findUserById(id);
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -31,7 +31,7 @@ export class UsersService {
     id: uuid,
     updatePasswordDto: UpdatePasswordDto,
   ): Promise<User> {
-    const user: User | undefined = await Database.findById(id);
+    const user: User | undefined = await Database.findUserById(id);
 
     if (!user) {
       throw new NotFoundException('User not found');
