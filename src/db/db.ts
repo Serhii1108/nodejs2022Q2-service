@@ -17,9 +17,15 @@ interface StorageInterface {
   artists: Artist[];
   albums: Album[];
   tracks: Track[];
+  favorites: {
+    artists: uuid[];
+    albums: uuid[];
+    tracks: uuid[];
+  };
 }
 
 type StorageItemsNames = 'users' | 'artists' | 'albums' | 'tracks';
+export type FavsItemsNames = 'artists' | 'albums' | 'tracks';
 type StorageItems = User | Artist | Album | Track;
 type StorageItemsArr = User[] | Artist[] | Album[] | Track[];
 type CreateDtos =
@@ -34,6 +40,11 @@ class Database {
     artists: [],
     albums: [],
     tracks: [],
+    favorites: {
+      artists: [],
+      albums: [],
+      tracks: [],
+    },
   };
 
   async getAll(storageItemName: StorageItemsNames): Promise<StorageItemsArr> {
@@ -96,6 +107,86 @@ class Database {
 
     this.storage[storageItemName] = filteredItems;
     return true;
+  }
+
+  // Favs
+  async getAllFavs() {
+    const {
+      artists: artistsIds,
+      albums: albumsIds,
+      tracks: tracksIds,
+    } = this.storage.favorites;
+
+    const { artists, albums, tracks } = await this.parseFavs(
+      artistsIds,
+      albumsIds,
+      tracksIds,
+    );
+
+    const favs = { artists, albums, tracks };
+    return favs;
+  }
+
+  async parseFavs(
+    artistsIds: string[],
+    albumsIds: string[],
+    tracksIds: string[],
+  ) {
+    const artists = (
+      await Promise.all(
+        artistsIds.map(async (id) => await this.findById(id, 'artists')),
+      )
+    ).filter((item) => item);
+
+    const albums = (
+      await Promise.all(
+        albumsIds.map(async (id) => await this.findById(id, 'albums')),
+      )
+    ).filter((item) => item);
+
+    const tracks = (
+      await Promise.all(
+        tracksIds.map(async (id) => await this.findById(id, 'tracks')),
+      )
+    ).filter((item) => item);
+
+    return { artists, albums, tracks };
+  }
+
+  async addToFavs(id: uuid, favsItemsNames: FavsItemsNames) {
+    const favs: uuid[] = this.storage.favorites[favsItemsNames];
+
+    const item: StorageItems = await this.findById(id, favsItemsNames);
+    if (!item) return undefined;
+
+    let isItemAlreadyInFavs = false;
+    favs.forEach((itemId: string) => {
+      if (itemId === id) isItemAlreadyInFavs = true;
+    });
+
+    if (!isItemAlreadyInFavs) {
+      favs.push(id);
+    }
+
+    return await this.getAllFavs();
+  }
+
+  async deleteFromFavs(id: uuid, favsItemsNames: FavsItemsNames) {
+    const favs: uuid[] = this.storage.favorites[favsItemsNames];
+
+    let isItemDeleted = false;
+    this.storage.favorites[favsItemsNames] = favs.filter((itemId) => {
+      if (id === itemId) {
+        isItemDeleted = true;
+        return false;
+      } else {
+        return true;
+      }
+    });
+
+    if (!isItemDeleted) return undefined;
+
+    return await this.getAllFavs();
   }
 
   // Users
