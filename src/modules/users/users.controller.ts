@@ -29,7 +29,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findById(@Param('id', ParseUUIDPipe) id: uuid) {
+  async findById(@Param('id', new ParseUUIDPipe({ version: '4' })) id: uuid) {
     return await this.usersService.findById(id);
   }
 
@@ -41,7 +41,7 @@ export class UsersController {
 
   @Put(':id')
   async updatePassword(
-    @Param('id', ParseUUIDPipe) id: uuid,
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: uuid,
     @Body() updatePasswordDto: UpdatePasswordDto,
   ): Promise<User> {
     return await this.usersService.updatePassword(id, updatePasswordDto);
@@ -49,7 +49,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteUser(@Param('id', ParseUUIDPipe) id: uuid) {
+  async deleteUser(@Param('id', new ParseUUIDPipe({ version: '4' })) id: uuid) {
     await this.usersService.deleteUser(id);
   }
 }
