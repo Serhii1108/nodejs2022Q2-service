@@ -90,6 +90,13 @@ class Database {
         }
       });
 
+      if (!(items[0] instanceof User)) {
+        const favs = this.storage.favorites[storageItemName];
+        this.storage.favorites[storageItemName] = favs.filter(
+          (itemId: string) => itemId !== id,
+        );
+      }
+
       const tracks: Track[] = this.storage.tracks;
       if (items[0] instanceof Album) {
         tracks.forEach((track) => {
@@ -132,23 +139,17 @@ class Database {
     albumsIds: string[],
     tracksIds: string[],
   ) {
-    const artists = (
-      await Promise.all(
-        artistsIds.map(async (id) => await this.findById(id, 'artists')),
-      )
-    ).filter((item) => item);
+    const artists = await Promise.all(
+      artistsIds.map(async (id) => await this.findById(id, 'artists')),
+    );
 
-    const albums = (
-      await Promise.all(
-        albumsIds.map(async (id) => await this.findById(id, 'albums')),
-      )
-    ).filter((item) => item);
+    const albums = await Promise.all(
+      albumsIds.map(async (id) => await this.findById(id, 'albums')),
+    );
 
-    const tracks = (
-      await Promise.all(
-        tracksIds.map(async (id) => await this.findById(id, 'tracks')),
-      )
-    ).filter((item) => item);
+    const tracks = await Promise.all(
+      tracksIds.map(async (id) => await this.findById(id, 'tracks')),
+    );
 
     return { artists, albums, tracks };
   }
