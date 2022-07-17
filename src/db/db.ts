@@ -34,6 +34,8 @@ type CreateDtos =
   | CreateAlbumDto
   | CreateTrackDto;
 
+type FavsRes = { status: number; message: string };
+
 class Database {
   private readonly storage: StorageInterface = {
     users: [],
@@ -154,7 +156,10 @@ class Database {
     return { artists, albums, tracks };
   }
 
-  async addToFavs(id: uuid, favsItemsNames: FavsItemsNames) {
+  async addToFavs(
+    id: uuid,
+    favsItemsNames: FavsItemsNames,
+  ): Promise<FavsRes | undefined> {
     const favs: uuid[] = this.storage.favorites[favsItemsNames];
 
     const item: StorageItems = await this.findById(id, favsItemsNames);
@@ -169,10 +174,18 @@ class Database {
       favs.push(id);
     }
 
-    return await this.getAllFavs();
+    const res: FavsRes = {
+      status: 201,
+      message: 'Added successfully',
+    };
+
+    return res;
   }
 
-  async deleteFromFavs(id: uuid, favsItemsNames: FavsItemsNames) {
+  async deleteFromFavs(
+    id: uuid,
+    favsItemsNames: FavsItemsNames,
+  ): Promise<true | undefined> {
     const favs: uuid[] = this.storage.favorites[favsItemsNames];
 
     let isItemDeleted = false;
@@ -187,7 +200,7 @@ class Database {
 
     if (!isItemDeleted) return undefined;
 
-    return await this.getAllFavs();
+    return true;
   }
 
   // Users

@@ -13,16 +13,16 @@ export class FavoritesService {
   }
 
   async addToFavs(id: uuid, favsItemsNames: FavsItemsNames) {
-    const items = await Database.addToFavs(id, favsItemsNames);
-    if (!items) throw new UnprocessableEntityException('Item not found');
+    const res = await Database.addToFavs(id, favsItemsNames);
+    if (!res) throw new UnprocessableEntityException('Item not found');
 
-    return items;
+    return res;
   }
 
   async deleteFromFavs(id: uuid, favsItemsNames: FavsItemsNames) {
-    const items = await Database.deleteFromFavs(id, favsItemsNames);
-    if (!items) throw new NotFoundException('Item is not favorite');
+    const isItemDeleted = await Database.deleteFromFavs(id, favsItemsNames);
+    if (!isItemDeleted) throw new NotFoundException('Item is not favorite');
 
-    return items;
+    return isItemDeleted;
   }
 }
