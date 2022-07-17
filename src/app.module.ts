@@ -6,9 +6,10 @@ import { AppController } from './app.controller.js';
 import { UsersModule } from './modules/users/users.module.js';
 import { AlbumsModule } from './modules/albums/albums.module.js';
 import { ArtistsModule } from './modules/artists/artists.module.js';
+import { TracksModule } from './modules/tracks/tracks.module.js';
 
 @Module({
-  imports: [UsersModule, ArtistsModule, AlbumsModule],
+  imports: [UsersModule, ArtistsModule, AlbumsModule, TracksModule],
   controllers: [AppController],
   providers: [AppService],
 })

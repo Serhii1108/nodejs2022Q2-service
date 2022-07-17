@@ -1,5 +1,6 @@
 import { User } from '../modules/users/entities/user.entity.js';
 import { Album } from '../modules/albums/entities/album.entity.js';
+import { Track } from 'src/modules/tracks/entities/track.entity.js';
 import { Artist } from '../modules/artists/entities/artist.entity.js';
 
 import { CreateUserDto } from '../modules/users/dto/createUser.dto.js';
@@ -8,23 +9,31 @@ import { UpdateArtistDto } from '../modules/artists/dto/update-artist.dto.js';
 import { UpdatePasswordDto } from '../modules/users/dto/updatePassword.dto.js';
 import { CreateAlbumDto } from '../modules/albums/dto/create-album.dto.js';
 import { UpdateAlbumDto } from '../modules/albums/dto/update-album.dto.js';
+import { CreateTrackDto } from 'src/modules/tracks/dto/create-track.dto.js';
+import { UpdateTrackDto } from 'src/modules/tracks/dto/update-track.dto.js';
 
 interface StorageInterface {
   users: User[];
   artists: Artist[];
   albums: Album[];
+  tracks: Track[];
 }
 
-type StorageItemsNames = 'users' | 'artists' | 'albums';
-type StorageItems = User | Artist | Album;
-type StorageItemsArr = User[] | Artist[] | Album[];
-type CreateDtos = CreateUserDto | CreateArtistDto | CreateAlbumDto;
+type StorageItemsNames = 'users' | 'artists' | 'albums' | 'tracks';
+type StorageItems = User | Artist | Album | Track;
+type StorageItemsArr = User[] | Artist[] | Album[] | Track[];
+type CreateDtos =
+  | CreateUserDto
+  | CreateArtistDto
+  | CreateAlbumDto
+  | CreateTrackDto;
 
 class Database {
   private readonly storage: StorageInterface = {
     users: [],
     artists: [],
     albums: [],
+    tracks: [],
   };
 
   async getAll(storageItemName: StorageItemsNames): Promise<StorageItemsArr> {
@@ -35,9 +44,9 @@ class Database {
     id: uuid,
     storageItemName: StorageItemsNames,
   ): Promise<StorageItems | undefined> {
-    let searchedItem: User | Artist | Album | undefined = undefined;
+    let searchedItem: StorageItems | undefined = undefined;
     const items: StorageItemsArr = this.storage[storageItemName];
-    items.forEach((item: User | Artist | Album) => {
+    items.forEach((item: StorageItems) => {
       if (item.id === id) searchedItem = item;
     });
     return searchedItem;
@@ -56,7 +65,7 @@ class Database {
   async deleteItem(
     id: uuid,
     storageItemName: StorageItemsNames,
-  ): Promise<true | false> {
+  ): Promise<boolean> {
     const items: StorageItemsArr = this.storage[storageItemName];
 
     let isItemDeleted = false;
@@ -117,6 +126,21 @@ class Database {
     album.artistId = artistId;
 
     return album;
+  }
+
+  // Tracks
+  async updateTrack(
+    id: uuid,
+    { name, artistId, albumId, duration }: UpdateTrackDto,
+  ): Promise<Track> {
+    const track: Track = this.storage.tracks.find((track) => track.id === id);
+
+    track.name = name;
+    track.artistId = artistId;
+    track.albumId = albumId;
+    track.duration = duration;
+
+    return track;
   }
 }
 
