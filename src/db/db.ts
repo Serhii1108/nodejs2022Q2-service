@@ -67,17 +67,30 @@ class Database {
     storageItemName: StorageItemsNames,
   ): Promise<boolean> {
     const items: StorageItemsArr = this.storage[storageItemName];
-
     let isItemDeleted = false;
     const filteredItems = [];
 
-    items.forEach((item: StorageItems) => {
-      if (item.id === id) {
-        isItemDeleted = true;
-      } else {
-        filteredItems.push(item);
+    if (items.length) {
+      items.forEach((item: StorageItems) => {
+        if (item.id === id) {
+          isItemDeleted = true;
+        } else {
+          filteredItems.push(item);
+        }
+      });
+
+      const tracks: Track[] = this.storage.tracks;
+      if (items[0] instanceof Album) {
+        tracks.forEach((track) => {
+          if (track.albumId === id) track.albumId = null;
+        });
       }
-    });
+      if (items[0] instanceof Artist) {
+        tracks.forEach((track) => {
+          if (track.artistId === id) track.artistId = null;
+        });
+      }
+    }
 
     if (!isItemDeleted) return false;
 
