@@ -32,14 +32,14 @@ export class AlbumsService {
   }
 
   async updateAlbum(id: uuid, updateAlbumDto: UpdateAlbumDto): Promise<Album> {
-    const album: Album | undefined = (await Database.findById(
+    const album: Album | undefined = await Database.updateAlbum(
       id,
-      'albums',
-    )) as Album;
+      updateAlbumDto,
+    );
 
     if (!album) throw new NotFoundException('Album not found');
 
-    return Database.updateAlbum(id, updateAlbumDto);
+    return album;
   }
 
   async deleteAlbum(id: uuid) {

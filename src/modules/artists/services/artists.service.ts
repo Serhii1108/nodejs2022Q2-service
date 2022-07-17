@@ -31,14 +31,14 @@ export class ArtistsService {
   }
 
   async updateArtist(id: uuid, updateArtistDto: UpdateArtistDto) {
-    const artist: Artist | undefined = (await Database.findById(
+    const artist: Artist | undefined = await Database.updateArtist(
       id,
-      'artists',
-    )) as Artist;
+      updateArtistDto,
+    );
 
     if (!artist) throw new NotFoundException('Artist not found');
 
-    return await Database.updateArtist(id, updateArtistDto);
+    return artist;
   }
 
   async deleteArtist(id: uuid) {

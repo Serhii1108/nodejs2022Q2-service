@@ -32,14 +32,14 @@ export class TracksService {
   }
 
   async updateTrack(id: uuid, updateTrackDto: UpdateTrackDto): Promise<Track> {
-    const track: Track | undefined = (await Database.findById(
+    const track: Track | undefined = await Database.updateTrack(
       id,
-      'tracks',
-    )) as Track;
+      updateTrackDto,
+    );
 
     if (!track) throw new NotFoundException('Track not found');
 
-    return Database.updateTrack(id, updateTrackDto);
+    return track;
   }
 
   async deleteTrack(id: uuid) {

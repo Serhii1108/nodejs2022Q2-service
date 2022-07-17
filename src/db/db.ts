@@ -103,10 +103,12 @@ class Database {
   async updateArtist(
     id: uuid,
     { name, grammy }: UpdateArtistDto,
-  ): Promise<Artist> {
-    const artist: Artist = this.storage.artists.find(
+  ): Promise<Artist | undefined> {
+    const artist: Artist | undefined = this.storage.artists.find(
       (artist) => artist.id === id,
     );
+
+    if (!artist) return undefined;
 
     artist.name = name;
     artist.grammy = grammy;
@@ -118,8 +120,12 @@ class Database {
   async updateAlbum(
     id: uuid,
     { name, year, artistId }: UpdateAlbumDto,
-  ): Promise<Album> {
-    const album: Album = this.storage.albums.find((album) => album.id === id);
+  ): Promise<Album | undefined> {
+    const album: Album | undefined = this.storage.albums.find(
+      (album) => album.id === id,
+    );
+
+    if (!album) return undefined;
 
     album.name = name;
     album.year = year;
@@ -132,8 +138,12 @@ class Database {
   async updateTrack(
     id: uuid,
     { name, artistId, albumId, duration }: UpdateTrackDto,
-  ): Promise<Track> {
-    const track: Track = this.storage.tracks.find((track) => track.id === id);
+  ): Promise<Track | undefined> {
+    const track: Track | undefined = this.storage.tracks.find(
+      (track) => track.id === id,
+    );
+
+    if (!track) return undefined;
 
     track.name = name;
     track.artistId = artistId;
