@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppService } from './app.service.js';
 import { AppController } from './app.controller.js';
@@ -11,6 +13,18 @@ import { FavoritesModule } from './modules/favorites/favorites.module.js';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: 'db',
+      database: process.env.POSTGRES_DB,
+      port: +process.env.POSTGRES_PORT,
+      username: process.env.POSTGRES_USER,
+      password: process.env.POSTGRES_PASSWORD,
+    }),
     UsersModule,
     ArtistsModule,
     AlbumsModule,
