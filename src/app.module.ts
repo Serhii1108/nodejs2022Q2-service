@@ -24,6 +24,8 @@ import { FavoritesModule } from './modules/favorites/favorites.module.js';
       port: +process.env.POSTGRES_PORT,
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
+      entities: ['dist/**/entities/*.entity.js'],
+      synchronize: true,
     }),
     UsersModule,
     ArtistsModule,
