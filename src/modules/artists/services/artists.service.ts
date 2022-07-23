@@ -6,11 +6,15 @@ import { CreateArtistDto } from '../dto/create-artist.dto';
 import { UpdateArtistDto } from '../dto/update-artist.dto';
 import { Artist } from '../entities/artist.entity.js';
 
+import { Album } from '../../../modules/albums/entities/album.entity.js';
+
 @Injectable()
 export class ArtistsService {
   constructor(
     @InjectRepository(Artist)
     private artistsRepository: Repository<Artist>,
+    @InjectRepository(Album)
+    private albumRepository: Repository<Album>,
   ) {}
 
   async getAll(): Promise<Artist[]> {
@@ -49,5 +53,18 @@ export class ArtistsService {
     });
     if (!deletedArtist.affected)
       throw new NotFoundException('Artist not found');
+
+    await this.deleteArtistIdFromAlbums(id);
+  }
+
+  private async deleteArtistIdFromAlbums(id: uuid) {
+    const albums: Album[] = await this.albumRepository.find({
+      where: { artistId: id },
+    });
+
+    albums.forEach(async (album) => {
+      album.artistId = null;
+      await this.albumRepository.save(album);
+    });
   }
 }

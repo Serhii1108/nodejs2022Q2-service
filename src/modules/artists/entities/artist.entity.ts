@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity('artist')
 export class Artist {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -10,10 +10,4 @@ export class Artist {
 
   @Column()
   grammy: boolean;
-
-  // constructor(partial: Partial<Artist>) {
-  //   Object.assign(this, partial);
-
-  //   this.id = v4();
-  // }
 }

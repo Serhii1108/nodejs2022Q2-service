@@ -3,7 +3,7 @@ import { Column, Entity, PrimaryGeneratedColumn, VersionColumn } from 'typeorm';
 
 import { IntTransformer } from '../../../utils/intTransformer.js';
 
-@Entity()
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: uuid;
