@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, VersionColumn } from 'typeorm';
 
 import { IntTransformer } from '../../../utils/intTransformer.js';
 
@@ -15,7 +15,7 @@ export class User {
   @Exclude({ toPlainOnly: true })
   password: string;
 
-  @Column('int')
+  @VersionColumn()
   version: number;
 
   @Column('int8', { transformer: new IntTransformer() })
