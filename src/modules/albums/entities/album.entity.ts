@@ -22,7 +22,7 @@ export class Album {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'artist_id' })
-  artist: Artist;
+  private artist: Artist;
 
   @Column({ nullable: true })
   artistId: string | null;
