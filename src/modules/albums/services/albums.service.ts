@@ -6,15 +6,12 @@ import { CreateAlbumDto } from '../dto/create-album.dto.js';
 import { UpdateAlbumDto } from '../dto/update-album.dto.js';
 
 import { Album } from '../entities/album.entity.js';
-import { Track } from '../../tracks/entities/track.entity.js';
 
 @Injectable()
 export class AlbumsService {
   constructor(
     @InjectRepository(Album)
     private albumsRepository: Repository<Album>,
-    @InjectRepository(Track)
-    private trackRepository: Repository<Track>,
   ) {}
 
   async getAll(): Promise<Album[]> {
@@ -55,18 +52,5 @@ export class AlbumsService {
       id,
     });
     if (!deletedAlbum.affected) throw new NotFoundException('Album not found');
-
-    await this.deleteAlbumIdFromTracks(id);
-  }
-
-  private async deleteAlbumIdFromTracks(id: uuid) {
-    const tracks: Track[] = await this.trackRepository.find({
-      where: { albumId: id },
-    });
-
-    tracks.forEach(async (track) => {
-      track.albumId = null;
-      await this.trackRepository.save(track);
-    });
   }
 }

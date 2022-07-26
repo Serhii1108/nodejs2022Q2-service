@@ -1,11 +1,7 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Artist } from '../../../modules/artists/entities/artist.entity.js';
+
 @Entity('album')
 export class Album {
   @PrimaryGeneratedColumn('uuid')
@@ -17,12 +13,12 @@ export class Album {
   @Column()
   year: number;
 
-  @OneToOne(() => Artist, {
-    cascade: true,
+  @ManyToOne(() => Artist, (artist) => artist.id, {
+    nullable: true,
+    cascade: ['insert', 'update', 'remove'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'artist_id' })
-  private artist: Artist;
+  artist: Artist;
 
   @Column({ nullable: true })
   artistId: string | null;

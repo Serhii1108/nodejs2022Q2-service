@@ -1,9 +1,9 @@
 import {
   Column,
   Entity,
-  JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
+  Relation,
 } from 'typeorm';
 
 import { Artist } from '../../artists/entities/artist.entity.js';
@@ -21,23 +21,23 @@ export class Track {
   duration: number;
 
   // Artist id
-  @OneToOne(() => Artist, {
-    cascade: true,
+  @ManyToOne(() => Artist, (artist) => artist.id, {
+    nullable: true,
+    cascade: ['insert', 'update', 'remove'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'artist_id' })
-  private artist: Artist;
+  artist: Relation<Artist>;
 
   @Column({ nullable: true })
   artistId: string | null;
 
   // Album id
-  @OneToOne(() => Album, {
-    cascade: true,
+  @ManyToOne(() => Album, (album) => album.id, {
+    nullable: true,
+    cascade: ['insert', 'update', 'remove'],
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'album_id' })
-  private album: Album;
+  album: Relation<Album>;
 
   @Column({ nullable: true })
   albumId: string | null;
