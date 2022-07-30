@@ -1,4 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 import { Artist } from '../../../modules/artists/entities/artist.entity.js';
 
@@ -13,12 +19,12 @@ export class Album {
   @Column()
   year: number;
 
-  @ManyToOne(() => Artist, (artist) => artist.id, {
+  @ManyToOne('Artist', 'id', {
     nullable: true,
     cascade: ['insert', 'update', 'remove'],
     onDelete: 'SET NULL',
   })
-  artist: Artist;
+  artist: Relation<Artist>;
 
   @Column({ nullable: true })
   artistId: string | null;

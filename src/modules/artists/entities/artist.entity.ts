@@ -1,4 +1,10 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 import { Album } from '../../albums/entities/album.entity.js';
 import { Track } from '../../tracks/entities/track.entity.js';
@@ -14,17 +20,17 @@ export class Artist {
   @Column()
   grammy: boolean;
 
-  @OneToMany(() => Album, (album) => album.artist, {
+  @OneToMany('Album', 'artist', {
     nullable: true,
     onDelete: 'SET NULL',
     cascade: ['insert', 'update'],
   })
-  albums: Album[];
+  albums: Relation<Album[]>;
 
-  @OneToMany(() => Track, (track) => track.artist, {
+  @OneToMany('Track', 'artist', {
     nullable: true,
     onDelete: 'SET NULL',
     cascade: ['insert', 'update'],
   })
-  tracks: Track[];
+  tracks: Relation<Track[]>;
 }

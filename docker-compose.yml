@@ -20,7 +20,7 @@ services:
     restart: always
     networks:
       - home-lib-network
-    command: npm run start:dev
+    command: npm run start:migration:dev
   db:
     build:
       context: .

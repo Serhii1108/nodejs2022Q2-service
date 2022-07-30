@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import config from './orm.config.js';
+import { dataSource } from './orm.config.js';
 
 import { AppService } from './app.service.js';
 import { AppController } from './app.controller.js';
@@ -18,7 +18,7 @@ import { FavoritesModule } from './modules/favorites/favorites.module.js';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRoot(config),
+    TypeOrmModule.forRoot(dataSource.options),
     UsersModule,
     ArtistsModule,
     AlbumsModule,

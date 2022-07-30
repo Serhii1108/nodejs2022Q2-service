@@ -12,6 +12,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
+    "start:migration:dev": "npm run typeorm:migration && npm run start:dev",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -20,6 +21,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "typeorm:migration": "ts-node ./node_modules/typeorm/cli.js migration:run -d ./src/orm.config.ts",
+    "typeorm:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate ./migrations/migrations -d ./src/orm.config.ts",
     "scan:app": "docker scan nodejs2022q2-service_app",
     "scan:db": "docker scan nodejs2022q2-service_db"
   },

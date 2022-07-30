@@ -73,6 +73,26 @@ export class FavoritesService {
   }
 
   private async getFavs() {
+    const favs = await this.selectFavs();
+
+    if (!favs) return await this.createFavs();
+
+    return favs;
+  }
+
+  private async createFavs(): Promise<Favorite> {
+    const defEntity = {
+      artists: [],
+      albums: [],
+      tracks: [],
+    };
+    const favs = this.favoritesRepository.create(defEntity);
+    await this.favoritesRepository.save(favs);
+
+    return await this.selectFavs();
+  }
+
+  private async selectFavs(): Promise<Favorite> {
     return await this.favoritesRepository
       .createQueryBuilder('favorites')
       .leftJoinAndSelect('favorites.artists', 'artists')

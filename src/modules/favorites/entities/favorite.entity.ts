@@ -1,4 +1,10 @@
-import { Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
 import { Album } from '../../albums/entities/album.entity.js';
 import { Artist } from '../../artists/entities/artist.entity.js';
@@ -21,14 +27,14 @@ export class Favorite {
     eager: true,
   })
   @JoinTable()
-  albums: Album[];
+  albums: Relation<Album[]>;
 
   @ManyToMany(() => Track, {
     cascade: ['insert', 'update'],
     eager: true,
   })
   @JoinTable()
-  tracks: Track[];
+  tracks: Relation<Track[]>;
 
   toResponse() {
     const { artists, albums, tracks } = this;
