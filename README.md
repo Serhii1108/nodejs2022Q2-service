@@ -14,7 +14,7 @@ git clone https://github.com/Serhii1108/nodejs2022Q2-service.git
 ## Installing NPM modules
 
 ```
-git checkout containerization
+git checkout database
 ```
 
 ```
