@@ -12,6 +12,7 @@ import { AlbumsModule } from './modules/albums/albums.module.js';
 import { ArtistsModule } from './modules/artists/artists.module.js';
 import { TracksModule } from './modules/tracks/tracks.module.js';
 import { FavoritesModule } from './modules/favorites/favorites.module.js';
+import { AuthModule } from './modules/auth/auth.module.js';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { FavoritesModule } from './modules/favorites/favorites.module.js';
     AlbumsModule,
     TracksModule,
     FavoritesModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
