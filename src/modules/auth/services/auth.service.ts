@@ -6,15 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../../users/entities/user.entity.js';
 import { CreateUserDto } from '../../users/dto/createUser.dto.js';
 
-type signupRes = {
-  status: number;
-  message: string;
-};
-const res: signupRes = {
-  status: 201,
-  message: 'User create successfully',
-};
-
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,7 +24,7 @@ export class AuthService {
     return null;
   }
 
-  async signup(createUserDto: CreateUserDto): Promise<signupRes> {
+  async signup(createUserDto: CreateUserDto): Promise<User> {
     const createdAt = Date.now();
 
     const createdUser: User = this.usersRepository.create({
@@ -44,7 +35,7 @@ export class AuthService {
 
     await this.usersRepository.save(createdUser);
 
-    return res;
+    return await this.usersRepository.findOneBy({ id: createdUser.id });
   }
 
   async login({ login, password }: CreateUserDto) {
@@ -56,7 +47,7 @@ export class AuthService {
 
     const payload = { login, sub: user.id };
     return {
-      token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
     };
   }
 }

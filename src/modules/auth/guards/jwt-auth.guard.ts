@@ -26,12 +26,12 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException();
     }
 
+    const secret = process.env.JWT_SECRET_KEY;
     try {
-      this.jwtService.verify(token);
+      this.jwtService.verify(token, { secret });
     } catch {
       throw new UnauthorizedException();
     }
-
     return true;
   }
 }
