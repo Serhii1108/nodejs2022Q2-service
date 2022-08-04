@@ -1,5 +1,6 @@
 import { Repository } from 'typeorm';
-import { Injectable } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { User } from '../../users/entities/user.entity.js';
@@ -19,7 +20,18 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private jwtService: JwtService,
   ) {}
+
+  async validateUser(login: string, password: string) {
+    const user: User | undefined = await this.usersRepository.findOneBy({
+      login,
+    });
+
+    if (user && user.password === password) return user;
+
+    return null;
+  }
 
   async signup(createUserDto: CreateUserDto): Promise<signupRes> {
     const createdAt = Date.now();
@@ -33,5 +45,18 @@ export class AuthService {
     await this.usersRepository.save(createdUser);
 
     return res;
+  }
+
+  async login({ login, password }: CreateUserDto) {
+    const user: User = await this.validateUser(login, password);
+
+    if (!user) {
+      throw new ForbiddenException();
+    }
+
+    const payload = { login, sub: user.id };
+    return {
+      token: this.jwtService.sign(payload),
+    };
   }
 }
