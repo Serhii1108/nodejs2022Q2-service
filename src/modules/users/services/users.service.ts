@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
 
@@ -10,6 +11,7 @@ import { CreateUserDto } from '../dto/createUser.dto.js';
 import { UpdatePasswordDto } from '../dto/updatePassword.dto.js';
 import { User } from '../entities/user.entity.js';
 
+import { hashPassword } from '../../../utils/hashPassword.js';
 @Injectable()
 export class UsersService {
   constructor(
@@ -30,9 +32,11 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
     const createdAt = Date.now();
+    const hash = await hashPassword(createUserDto.password);
 
     const createdUser: User = this.usersRepository.create({
       ...createUserDto,
+      password: hash,
       createdAt,
       updatedAt: createdAt,
     });
@@ -48,8 +52,9 @@ export class UsersService {
   ): Promise<User> {
     const user: User = await this.findById(id);
 
-    if (user.password !== oldPassword)
-      throw new ForbiddenException('Password is wrong');
+    const match = await bcrypt.compare(user.password, oldPassword);
+
+    if (!match) throw new ForbiddenException('Password is wrong');
 
     user.password = newPassword;
     user.updatedAt = Date.now();
