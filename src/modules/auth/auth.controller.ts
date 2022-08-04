@@ -23,7 +23,14 @@ export class AuthController {
   }
 
   @Post('/login')
+  @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: CreateUserDto) {
     return await this.authService.login(loginDto);
+  }
+
+  @Post('/refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body() { refreshToken }) {
+    return await this.authService.refresh(refreshToken);
   }
 }

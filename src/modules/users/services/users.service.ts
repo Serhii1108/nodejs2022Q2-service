@@ -52,7 +52,7 @@ export class UsersService {
   ): Promise<User> {
     const user: User = await this.findById(id);
 
-    const match = await bcrypt.compare(user.password, oldPassword);
+    const match = await bcrypt.compare(oldPassword, user.password);
 
     if (!match) throw new ForbiddenException('Password is wrong');
 
