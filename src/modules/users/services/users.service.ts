@@ -56,7 +56,9 @@ export class UsersService {
 
     if (!match) throw new ForbiddenException('Password is wrong');
 
-    user.password = newPassword;
+    const hash = await hashPassword(newPassword);
+
+    user.password = hash;
     user.updatedAt = Date.now();
 
     await this.usersRepository.save(user);
