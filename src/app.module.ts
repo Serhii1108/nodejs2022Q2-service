@@ -13,6 +13,7 @@ import { ArtistsModule } from './modules/artists/artists.module.js';
 import { TracksModule } from './modules/tracks/tracks.module.js';
 import { FavoritesModule } from './modules/favorites/favorites.module.js';
 import { AuthModule } from './modules/auth/auth.module.js';
+import { LoggerModule } from './logger/logger.module.js';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module.js';
     TracksModule,
     FavoritesModule,
     AuthModule,
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

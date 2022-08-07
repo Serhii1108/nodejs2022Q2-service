@@ -8,9 +8,11 @@ import { UsersService } from '../users/services/users.service.js';
 
 import { AuthService } from './services/auth.service.js';
 import { AuthController } from './auth.controller.js';
+import { LoggerModule } from '../../logger/logger.module.js';
 
 @Module({
   imports: [
+    LoggerModule,
     TypeOrmModule.forFeature([User]),
     PassportModule.register({
       defaultStrategy: 'jwt',

@@ -10,12 +10,20 @@ import yaml from 'yaml';
 import path from 'path';
 
 import { AppModule } from './app.module.js';
+import { Logger } from './logger/services/logger.service.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4000;
 
+const logLevels = [0, 1, 2, 3, 4];
+const logLevel = logLevels.includes(+process.env.LOGGING_LEVEL)
+  ? +process.env.LOGGING_LEVEL
+  : 3;
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new Logger(logLevel),
+  });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
   const rootDirname = path.dirname(__dirname);
