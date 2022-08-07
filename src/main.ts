@@ -11,6 +11,7 @@ import path from 'path';
 
 import { AppModule } from './app.module.js';
 import { Logger } from './logger/services/logger.service.js';
+import { ExceptionFilter } from './logger/exception.filter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 4000;
@@ -24,7 +25,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: new Logger(logLevel),
   });
+
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+  app.useGlobalFilters(new ExceptionFilter());
 
   const rootDirname = path.dirname(__dirname);
   const DOC_API = await readFile(
