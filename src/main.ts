@@ -21,9 +21,11 @@ const logLevel = logLevels.includes(+process.env.LOGGING_LEVEL)
   ? +process.env.LOGGING_LEVEL
   : 3;
 
+const maxLogFileSize = process.env.MAX_LOG_FILE_SIZE || 100;
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: new Logger(logLevel),
+    logger: new Logger(logLevel, +maxLogFileSize),
   });
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));

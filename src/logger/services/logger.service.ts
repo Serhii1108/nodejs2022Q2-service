@@ -1,13 +1,25 @@
 import { ConsoleLogger, Injectable } from '@nestjs/common';
-import { writeFile } from 'fs';
+import { lstatSync, readdirSync, statSync, writeFileSync } from 'fs';
+import path from 'path';
+
+interface SetCurrLogFileNameDto {
+  size: number;
+  type: 'error' | 'info';
+  file: string;
+}
 
 @Injectable()
 export class Logger extends ConsoleLogger {
   private logLevel: number;
 
-  constructor(logLevel: number) {
+  private maxLogFileSize: number;
+  private currInfoLogFileName: string;
+  private currErrorsLogFileName: string;
+
+  constructor(logLevel: number, maxLogFileSize: number) {
     super();
     this.logLevel = logLevel;
+    this.maxLogFileSize = maxLogFileSize;
   }
 
   get getCurrTime() {
@@ -18,6 +30,22 @@ export class Logger extends ConsoleLogger {
 
   get defMessage() {
     return `[Nest] ${process.pid}  - ${this.getCurrTime}\t`;
+  }
+
+  set setCurrLogFileName({ size, type, file }: SetCurrLogFileNameDto) {
+    if (size >= this.maxLogFileSize * 1024) {
+      if (type === 'error') {
+        this.currErrorsLogFileName = `errors-${Date.now()}.log`;
+      } else {
+        this.currInfoLogFileName = `info-${Date.now()}.log`;
+      }
+    } else {
+      if (type === 'error') {
+        this.currErrorsLogFileName = file;
+      } else {
+        this.currInfoLogFileName = file;
+      }
+    }
   }
 
   log(message: string) {
@@ -64,24 +92,58 @@ export class Logger extends ConsoleLogger {
     const logDirname = './logs/info';
     const errorsDirname = './logs/errors';
 
-    if (!isError) {
-      writeFile(
-        `${logDirname}/info.log`,
+    if (isError) {
+      this.checkFileSize(errorsDirname, 'error');
+      writeFileSync(
+        `${errorsDirname}/${this.currErrorsLogFileName}`,
         `${message}\n`,
         { flag: 'a+' },
-        (err) => {
-          if (err) throw err;
-        },
       );
     } else {
-      writeFile(
-        `${errorsDirname}/errors.log`,
+      this.checkFileSize(logDirname, 'info');
+      writeFileSync(
+        `${logDirname}/${this.currInfoLogFileName}`,
         `${message}\n`,
         { flag: 'a+' },
-        (err) => {
-          if (err) throw err;
-        },
       );
     }
+  }
+
+  private checkFileSize(dir: string, type: 'info' | 'error') {
+    if (!this.isDirEmpty(dir)) {
+      const file = this.getMostRecentFile(dir);
+      const { size } = statSync(`${dir}/${file}`);
+
+      this.setCurrLogFileName = { size, type, file };
+    } else {
+      if (type === 'error') {
+        this.currErrorsLogFileName = `errors-${Date.now()}.log`;
+      } else {
+        this.currInfoLogFileName = `info-${Date.now()}.log`;
+      }
+    }
+  }
+
+  private isDirEmpty(dirname: string): boolean {
+    const files = readdirSync(dirname);
+    return files.length === 0;
+  }
+
+  private getMostRecentFile(dir: string): string {
+    const files = this.orderRecentFiles(dir);
+    return files[0] ? files[0].file : undefined;
+  }
+
+  private orderRecentFiles(dir: string): {
+    file: string;
+    mtime: Date;
+  }[] {
+    return readdirSync(dir)
+      .filter((file) => lstatSync(path.join(dir, file)).isFile())
+      .map((file) => ({
+        file,
+        mtime: lstatSync(path.join(dir, file)).mtime,
+      }))
+      .sort((a, b) => b.mtime.getTime() - a.mtime.getTime());
   }
 }
