@@ -1,4 +1,5 @@
 import { ConsoleLogger, Injectable } from '@nestjs/common';
+import { writeFile } from 'fs';
 
 @Injectable()
 export class Logger extends ConsoleLogger {
@@ -21,31 +22,66 @@ export class Logger extends ConsoleLogger {
 
   log(message: string) {
     if (this.logLevel >= 1) {
-      console.log(`${this.defMessage}LOG   ${message}`);
+      const logMessage = `${this.defMessage}LOG   ${message}`;
+      this.createLog(logMessage);
+      console.log(logMessage);
     }
   }
 
   error(message: string) {
     if (this.logLevel >= 2) {
-      console.log(`${this.defMessage}ERROR   ${message}`);
+      const logMessage = `${this.defMessage}ERROR   ${message}`;
+      this.createLog(logMessage, true);
+      console.error(logMessage);
     }
   }
 
   warn(message: string) {
     if (this.logLevel >= 3) {
-      console.log(`${this.defMessage}WARN   ${message}`);
+      const logMessage = `${this.defMessage}WARN   ${message}`;
+      this.createLog(logMessage);
+      console.warn(logMessage);
     }
   }
 
   debug(message: string) {
     if (this.logLevel >= 4) {
-      console.log(`${this.defMessage}DEBUG   ${message}`);
+      const logMessage = `${this.defMessage}DEBUG   ${message}`;
+      this.createLog(logMessage);
+      console.debug(logMessage);
     }
   }
 
   verbose(message: string) {
     if (this.logLevel >= 5) {
-      console.log(`${this.defMessage}VERBOSE   ${message}`);
+      const logMessage = `${this.defMessage}VERBOSE   ${message}`;
+      this.createLog(logMessage);
+      console.log(logMessage);
+    }
+  }
+
+  private createLog(message: string, isError = false) {
+    const logDirname = './logs/info';
+    const errorsDirname = './logs/errors';
+
+    if (!isError) {
+      writeFile(
+        `${logDirname}/info.log`,
+        `${message}\n`,
+        { flag: 'a+' },
+        (err) => {
+          if (err) throw err;
+        },
+      );
+    } else {
+      writeFile(
+        `${errorsDirname}/errors.log`,
+        `${message}\n`,
+        { flag: 'a+' },
+        (err) => {
+          if (err) throw err;
+        },
+      );
     }
   }
 }

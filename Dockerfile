@@ -25,3 +25,4 @@ RUN npm install --only=production
 COPY --from=development /home/app/dist ./dist
 COPY src ./src
 COPY doc ./doc
+COPY logs ./logs
