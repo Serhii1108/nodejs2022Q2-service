@@ -12,7 +12,9 @@ export class LoggerMiddleware implements NestMiddleware {
         params,
       )} body:${JSON.stringify(body)} message:"${statusMessage}"`;
 
-      Logger.log(message);
+      if (statusCode < 400) {
+        Logger.log(message);
+      }
     });
 
     next();
