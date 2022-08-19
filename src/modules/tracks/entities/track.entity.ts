@@ -1,15 +1,44 @@
-import { v4 } from 'uuid';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
+import { Artist } from '../../artists/entities/artist.entity.js';
+import { Album } from '../../albums/entities/album.entity.js';
+
+@Entity('track')
 export class Track {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
   name: string;
-  artistId: string | null;
-  albumId: string | null;
+
+  @Column()
   duration: number;
 
-  constructor(partial: Partial<Track>) {
-    Object.assign(this, partial);
+  // Artist id
+  @ManyToOne(() => Artist, (artist) => artist.id, {
+    nullable: true,
+    cascade: ['insert', 'update', 'remove'],
+    onDelete: 'SET NULL',
+  })
+  artist: Relation<Artist>;
 
-    this.id = v4();
-  }
+  @Column({ nullable: true })
+  artistId: string | null;
+
+  // Album id
+  @ManyToOne(() => Album, (album) => album.id, {
+    nullable: true,
+    cascade: ['insert', 'update', 'remove'],
+    onDelete: 'SET NULL',
+  })
+  album: Relation<Album>;
+
+  @Column({ nullable: true })
+  albumId: string | null;
 }

@@ -14,18 +14,32 @@ git clone https://github.com/Serhii1108/nodejs2022Q2-service.git
 ## Installing NPM modules
 
 ```
+git checkout database
+```
+
+```
 npm install
 ```
 
-## Running application
+## Build and run container
 
 ```
-npm start
+docker-compose up --build -V
+```
+
+## Run container
+
+```
+docker compose up
 ```
 
 After starting the app on port (4000 as default) you can open
 in your browser OpenAPI documentation by typing <http://localhost:4000/doc/>.
-For more information about OpenAPI/Swagger please visit <https://swagger.io/>.
+
+## Scanning
+
+- app: `npm run scan:app`
+- db: `npm run scan:db`
 
 ## Testing
 

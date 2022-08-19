@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-
-import Database from '../../../db/db.js';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 import { CreateTrackDto } from '../dto/create-track.dto.js';
 import { UpdateTrackDto } from '../dto/update-track.dto.js';
@@ -8,42 +8,49 @@ import { Track } from '../entities/track.entity.js';
 
 @Injectable()
 export class TracksService {
+  constructor(
+    @InjectRepository(Track)
+    private tracksRepository: Repository<Track>,
+  ) {}
+
   async getAll(): Promise<Track[]> {
-    return Database.getAll('tracks') as Promise<Track[]>;
+    return await this.tracksRepository.find();
   }
 
   async findById(id: uuid) {
-    const track: Track | undefined = (await Database.findById(
+    const track: Track | undefined = await this.tracksRepository.findOneBy({
       id,
-      'tracks',
-    )) as Track;
-
+    });
     if (!track) throw new NotFoundException('Track not found');
 
     return track;
   }
 
   async createTrack(createTrackDto: CreateTrackDto): Promise<Track> {
-    return (await Database.createItem(
-      createTrackDto,
-      'tracks',
-      Track,
-    )) as Track;
+    const createdTrack: Track = this.tracksRepository.create(createTrackDto);
+    await this.tracksRepository.save(createdTrack);
+
+    return createdTrack;
   }
 
-  async updateTrack(id: uuid, updateTrackDto: UpdateTrackDto): Promise<Track> {
-    const track: Track | undefined = await Database.updateTrack(
-      id,
-      updateTrackDto,
-    );
+  async updateTrack(
+    id: uuid,
+    { name, artistId, albumId, duration }: UpdateTrackDto,
+  ): Promise<Track> {
+    const track: Track = await this.findById(id);
 
-    if (!track) throw new NotFoundException('Track not found');
+    track.name = name;
+    track.artistId = artistId;
+    track.albumId = albumId;
+    track.duration = duration;
 
-    return track;
+    return await this.tracksRepository.save(track);
   }
 
   async deleteTrack(id: uuid) {
-    const IsTrackDeleted: boolean = await Database.deleteItem(id, 'tracks');
-    if (!IsTrackDeleted) throw new NotFoundException('Track not found');
+    const deletedTrack: DeleteResult = await this.tracksRepository.delete({
+      id,
+    });
+    if (!deletedTrack.affected) throw new NotFoundException('Track not found');
   }
 }

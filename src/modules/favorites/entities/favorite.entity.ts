@@ -1,9 +1,48 @@
-import { Album } from 'src/modules/albums/entities/album.entity';
-import { Artist } from 'src/modules/artists/entities/artist.entity';
-import { Track } from 'src/modules/tracks/entities/track.entity';
+import {
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 
+import { Album } from '../../albums/entities/album.entity.js';
+import { Artist } from '../../artists/entities/artist.entity.js';
+import { Track } from '../../tracks/entities/track.entity.js';
+
+@Entity('favorite')
 export class Favorite {
+  @PrimaryGeneratedColumn('uuid')
+  id: uuid;
+
+  @ManyToMany(() => Artist, {
+    cascade: ['insert', 'update'],
+    eager: true,
+  })
+  @JoinTable()
   artists: Artist[];
-  albums: Album[];
-  tracks: Track[];
+
+  @ManyToMany(() => Album, {
+    cascade: ['insert', 'update'],
+    eager: true,
+  })
+  @JoinTable()
+  albums: Relation<Album[]>;
+
+  @ManyToMany(() => Track, {
+    cascade: ['insert', 'update'],
+    eager: true,
+  })
+  @JoinTable()
+  tracks: Relation<Track[]>;
+
+  toResponse() {
+    const { artists, albums, tracks } = this;
+    return { artists, albums, tracks };
+  }
+
+  toUpdate() {
+    const { id, artists, albums, tracks } = this;
+    return { id, artists, albums, tracks };
+  }
 }
